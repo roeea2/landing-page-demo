@@ -1,0 +1,1703 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="he">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>מאפס ל-AI Developer | RoeeAI</title>
+  <link rel="icon" type="image/svg+xml" href="https://roeeaizman.com/favicon.svg?v=2">
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:           #07070f;
+      --bg-2:         #0c0c18;
+      --bg-3:         #111122;
+      --primary:      #3b6cf4;
+      --primary-hi:   #5a84ff;
+      --accent:       #00d4ff;
+      --accent-dim:   rgba(0,212,255,0.12);
+      --text:         #f0f0fa;
+      --muted:        #8888aa;
+      --dim:          #44445a;
+      --border:       rgba(255,255,255,0.07);
+      --border-hi:    rgba(59,108,244,0.35);
+    }
+
+    ::selection { background: var(--primary); color: #fff; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Heebo', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+
+    /* ── noise overlay ────────────────────────────────────────── */
+    body::after {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+      opacity: 0.025;
+      pointer-events: none;
+      z-index: 9999;
+    }
+
+    /* ── nav ──────────────────────────────────────────────────── */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      padding: 1rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: rgba(7,7,15,0.75);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 0.55rem;
+      font-size: 1.12rem;
+      font-weight: 900;
+      color: var(--text);
+      text-decoration: none;
+      letter-spacing: -0.02em;
+    }
+    .logo span { color: #DB785B; }
+    .logo-mark { flex-shrink: 0; display: block; }
+
+    .nav-btn {
+      background: var(--primary);
+      color: #fff;
+      border: none;
+      padding: 0.55rem 1.3rem;
+      border-radius: 8px;
+      font-family: 'Heebo', sans-serif;
+      font-size: 0.9rem;
+      font-weight: 700;
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-block;
+      transition: background 0.15s, transform 0.15s;
+    }
+    .nav-btn:hover  { background: var(--primary-hi); transform: translateY(-1px); }
+    .nav-btn:active { transform: scale(0.97); }
+
+    /* ── hero ─────────────────────────────────────────────────── */
+    .hero {
+      min-height: 100svh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      padding: 9rem 2rem 6rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero-mesh {
+      position: absolute; inset: 0;
+      pointer-events: none;
+      background:
+        radial-gradient(ellipse 90% 70% at 50% -5%,  rgba(59,108,244,0.28) 0%, transparent 65%),
+        radial-gradient(ellipse 55% 45% at 85% 55%,  rgba(0,212,255,0.1)   0%, transparent 60%),
+        radial-gradient(ellipse 45% 35% at 15% 75%,  rgba(59,108,244,0.13) 0%, transparent 60%);
+    }
+
+    .hero-grid {
+      position: absolute; inset: 0;
+      background-image:
+        linear-gradient(rgba(255,255,255,0.028) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.028) 1px, transparent 1px);
+      background-size: 56px 56px;
+      mask-image: radial-gradient(ellipse 85% 65% at 50% 38%, black 20%, transparent 80%);
+    }
+
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.45rem;
+      background: rgba(0,212,255,0.08);
+      border: 1px solid rgba(0,212,255,0.22);
+      color: var(--accent);
+      padding: 0.38rem 1rem;
+      border-radius: 100px;
+      font-size: 0.82rem;
+      font-weight: 700;
+      margin-bottom: 2rem;
+      animation: up 0.7s ease both;
+    }
+
+    .hero h1 {
+      font-size: clamp(3rem, 9vw, 6.5rem);
+      font-weight: 900;
+      line-height: 1.02;
+      letter-spacing: -0.035em;
+      margin-bottom: 1.4rem;
+      animation: up 0.7s 0.1s ease both;
+    }
+
+    .grad {
+      background: linear-gradient(130deg, var(--primary-hi) 0%, var(--accent) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .hero-sub {
+      font-size: clamp(1rem, 2.4vw, 1.3rem);
+      color: var(--muted);
+      max-width: 580px;
+      margin-bottom: 2.2rem;
+      font-weight: 400;
+      line-height: 1.75;
+      animation: up 0.7s 0.2s ease both;
+    }
+
+    .hero-tags {
+      display: flex;
+      gap: 0.7rem;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-bottom: 2.8rem;
+      animation: up 0.7s 0.3s ease both;
+    }
+
+    .tag {
+      background: rgba(255,255,255,0.05);
+      border: 1px solid var(--border);
+      padding: 0.38rem 1rem;
+      border-radius: 8px;
+      font-size: 0.88rem;
+      color: var(--muted);
+    }
+
+    .hero-btns {
+      display: flex;
+      gap: 0.9rem;
+      justify-content: center;
+      flex-wrap: wrap;
+      animation: up 0.7s 0.4s ease both;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--primary), var(--primary-hi));
+      color: #fff;
+      border: none;
+      padding: 0.95rem 2.2rem;
+      border-radius: 12px;
+      font-family: 'Heebo', sans-serif;
+      font-size: 1.05rem;
+      font-weight: 700;
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-block;
+      box-shadow: 0 0 35px rgba(59,108,244,0.55), 0 4px 20px rgba(0,0,0,0.35);
+      transition: transform 0.15s, box-shadow 0.15s;
+    }
+    .btn-primary:hover  { transform: translateY(-2px); box-shadow: 0 0 55px rgba(59,108,244,0.75), 0 8px 30px rgba(0,0,0,0.4); }
+    .btn-primary:active { transform: scale(0.97); }
+
+    .btn-ghost {
+      background: transparent;
+      color: var(--muted);
+      border: 1px solid var(--border);
+      padding: 0.95rem 1.9rem;
+      border-radius: 12px;
+      font-family: 'Heebo', sans-serif;
+      font-size: 1rem;
+      font-weight: 500;
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-block;
+      transition: border-color 0.15s, color 0.15s, transform 0.15s;
+    }
+    .btn-ghost:hover  { border-color: rgba(255,255,255,0.2); color: var(--text); transform: translateY(-1px); }
+
+    .hero-stats {
+      margin-top: 4.5rem;
+      display: flex;
+      gap: 3.5rem;
+      justify-content: center;
+      flex-wrap: wrap;
+      animation: up 0.7s 0.55s ease both;
+    }
+
+    .stat-n { font-size: 2.2rem; font-weight: 900; line-height: 1; }
+    .stat-l { font-size: 0.82rem; color: var(--muted); margin-top: 0.3rem; }
+
+    /* ── section commons ──────────────────────────────────────── */
+    .section { padding: 6rem 2rem; }
+    .section.alt { background: var(--bg-2); }
+
+    .container { max-width: 920px; margin: 0 auto; }
+
+    .label {
+      font-size: 0.75rem;
+      font-weight: 800;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 0.9rem;
+    }
+
+    .section-h {
+      font-size: clamp(1.9rem, 4.5vw, 2.9rem);
+      font-weight: 800;
+      letter-spacing: -0.025em;
+      line-height: 1.15;
+      margin-bottom: 1rem;
+    }
+
+    .section-sub {
+      font-size: 1.08rem;
+      color: var(--muted);
+      line-height: 1.7;
+    }
+
+    /* ── pain points ──────────────────────────────────────────── */
+    .pains {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 1.1rem;
+      margin-top: 2.8rem;
+    }
+
+    .pain {
+      background: rgba(255,255,255,0.028);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 1.4rem 1.6rem;
+      display: flex;
+      align-items: flex-start;
+      gap: 1rem;
+    }
+
+    .pain-ico { font-size: 1.5rem; flex-shrink: 0; margin-top: 0.1rem; }
+    .pain-txt { font-size: 0.97rem; color: var(--muted); line-height: 1.55; }
+
+    /* ── timeline ─────────────────────────────────────────────── */
+    .curriculum-head { text-align: center; margin-bottom: 3.8rem; }
+
+    .timeline {
+      max-width: 720px;
+      margin: 0 auto;
+      position: relative;
+    }
+
+    .timeline::before {
+      content: '';
+      position: absolute;
+      top: 8px; bottom: 0;
+      right: 22px;
+      width: 2px;
+      background: linear-gradient(to bottom, var(--primary), rgba(59,108,244,0.05));
+    }
+
+    .tl-item {
+      display: flex;
+      align-items: flex-start;
+      margin-bottom: 1.6rem;
+      padding-right: 3.5rem;
+      position: relative;
+      opacity: 0;
+      transform: translateY(18px);
+      transition: opacity 0.5s ease, transform 0.5s ease;
+    }
+    .tl-item.vis { opacity: 1; transform: translateY(0); }
+
+    .tl-dot {
+      position: absolute;
+      right: 14px; top: 1rem;
+      width: 18px; height: 18px;
+      border-radius: 50%;
+      background: var(--bg);
+      border: 2px solid var(--primary);
+      flex-shrink: 0;
+      transition: background 0.25s, box-shadow 0.25s;
+    }
+    .tl-item:hover .tl-dot {
+      background: var(--primary);
+      box-shadow: 0 0 14px rgba(59,108,244,0.65);
+    }
+
+    .tl-box {
+      flex: 1;
+      background: rgba(255,255,255,0.028);
+      border: 1px solid var(--border);
+      border-radius: 13px;
+      padding: 1.2rem 1.5rem;
+      transition: border-color 0.2s, background 0.2s;
+    }
+    .tl-item:hover .tl-box {
+      border-color: var(--border-hi);
+      background: rgba(59,108,244,0.06);
+    }
+
+    .tl-num  { font-size: 0.72rem; font-weight: 800; color: var(--primary-hi); letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 0.25rem; }
+    .tl-name { font-size: 1.02rem; font-weight: 700; color: var(--text); margin-bottom: 0.25rem; }
+    .tl-desc { font-size: 0.88rem; color: var(--muted); }
+    .tl-hour {
+      font-size: 0.78rem; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase;
+      color: var(--accent); background: rgba(99,102,241,0.1); border: 1px solid rgba(99,102,241,0.25);
+      border-radius: 6px; padding: 0.3rem 0.8rem; display: inline-block;
+      margin: 1.6rem 0 0.6rem; position: relative; z-index: 1;
+    }
+
+    /* ── personas ─────────────────────────────────────────────── */
+    .personas {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(270px, 1fr));
+      gap: 1.4rem;
+      margin-top: 2.8rem;
+    }
+
+    .persona {
+      background: var(--bg-3);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 2rem;
+      transition: border-color 0.2s, transform 0.2s;
+    }
+    .persona:hover { border-color: var(--border-hi); transform: translateY(-3px); }
+
+    .persona-ico  { font-size: 2.6rem; margin-bottom: 1rem; }
+    .persona-role { font-size: 1.1rem; font-weight: 800; margin-bottom: 0.5rem; }
+    .persona-desc { font-size: 0.93rem; color: var(--muted); line-height: 1.65; }
+
+    /* ── testimonials ─────────────────────────────────────────── */
+    .testi-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(268px, 1fr));
+      gap: 1.2rem;
+      margin-top: 2.8rem;
+    }
+
+    .testi {
+      background: rgba(255,255,255,0.028);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 1.8rem;
+      opacity: 0;
+      transform: translateY(18px);
+      transition: opacity 0.5s ease, transform 0.5s ease, border-color 0.2s;
+    }
+    .testi.vis   { opacity: 1; transform: translateY(0); }
+    .testi:hover { border-color: var(--border-hi); }
+
+    .stars { color: #fbbf24; font-size: 0.95rem; margin-bottom: 1rem; }
+
+    .testi-txt {
+      font-size: 0.95rem;
+      color: var(--muted);
+      line-height: 1.75;
+      margin-bottom: 1.5rem;
+    }
+
+    .author { display: flex; align-items: center; gap: 0.8rem; }
+
+    .avatar {
+      width: 42px; height: 42px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 0.95rem;
+      color: #fff;
+      flex-shrink: 0;
+    }
+
+    .author-name { font-weight: 700; font-size: 0.93rem; }
+    .author-role { font-size: 0.78rem; color: var(--muted); }
+
+    /* ── benefits ─────────────────────────────────────────────── */
+    .benefits {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(235px, 1fr));
+      gap: 1.1rem;
+      margin-top: 2.8rem;
+    }
+
+    .benefit {
+      display: flex;
+      align-items: flex-start;
+      gap: 1rem;
+      padding: 1.4rem;
+      background: rgba(255,255,255,0.028);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      opacity: 0;
+      transform: translateY(14px);
+      transition: opacity 0.4s ease, transform 0.4s ease, border-color 0.2s;
+    }
+    .benefit.vis   { opacity: 1; transform: translateY(0); }
+    .benefit:hover { border-color: var(--border-hi); }
+
+    .ben-ico {
+      width: 40px; height: 40px;
+      border-radius: 10px;
+      background: rgba(59,108,244,0.14);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.2rem;
+      flex-shrink: 0;
+    }
+
+    .ben-title { font-size: 0.93rem; font-weight: 700; margin-bottom: 0.22rem; }
+    .ben-desc  { font-size: 0.83rem; color: var(--muted); }
+
+    /* ── final cta ────────────────────────────────────────────── */
+    .cta-section {
+      padding: 9rem 2rem;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .cta-glow {
+      position: absolute; inset: 0;
+      background: radial-gradient(ellipse 65% 55% at 50% 50%, rgba(59,108,244,0.22) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .cta-section h2 {
+      font-size: clamp(2.2rem, 5.5vw, 3.8rem);
+      font-weight: 900;
+      letter-spacing: -0.035em;
+      line-height: 1.08;
+      margin-bottom: 1.2rem;
+      position: relative;
+    }
+
+    .cta-section > p {
+      font-size: 1.1rem;
+      color: var(--muted);
+      max-width: 480px;
+      margin: 0 auto 2.5rem;
+      line-height: 1.7;
+      position: relative;
+    }
+
+    .cta-section .btn-primary {
+      position: relative;
+      font-size: 1.12rem;
+      padding: 1.1rem 2.7rem;
+    }
+
+    .urgency {
+      margin-top: 1.2rem;
+      font-size: 0.83rem;
+      color: var(--dim);
+      position: relative;
+    }
+
+    /* ── bonus ────────────────────────────────────────────────── */
+    .bonus-section {
+      padding: 6rem 2rem;
+      position: relative;
+      overflow: hidden;
+    }
+    .bonus-section::before {
+      content: '';
+      position: absolute; inset: 0;
+      background: radial-gradient(ellipse 70% 55% at 50% 0%, rgba(245,158,11,0.1) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .bonus-header { text-align: center; margin-bottom: 3rem; }
+    .bonus-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      background: rgba(245,158,11,0.1);
+      border: 1px solid rgba(245,158,11,0.3);
+      color: #f59e0b;
+      padding: 0.35rem 1.1rem;
+      border-radius: 100px;
+      font-size: 0.78rem;
+      font-weight: 800;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      margin-bottom: 1rem;
+    }
+    .bonus-cards {
+      max-width: 820px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 1.4rem;
+    }
+    .bonus-card {
+      background: rgba(245,158,11,0.04);
+      border: 1px solid rgba(245,158,11,0.2);
+      border-radius: 20px;
+      padding: 2.6rem 2rem;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+      opacity: 0;
+      transform: translateY(18px);
+      transition: opacity 0.5s ease, transform 0.5s ease, border-color 0.2s;
+    }
+    .bonus-card.vis   { opacity: 1; transform: translateY(0); }
+    .bonus-card:hover { border-color: rgba(245,158,11,0.5); transform: translateY(-3px); }
+    .bonus-card::after {
+      content: '';
+      position: absolute;
+      top: -50px; left: 50%; transform: translateX(-50%);
+      width: 140px; height: 140px;
+      border-radius: 50%;
+      background: rgba(245,158,11,0.07);
+      pointer-events: none;
+    }
+    .bonus-num {
+      font-size: 5rem;
+      font-weight: 900;
+      line-height: 1;
+      background: linear-gradient(135deg, #f59e0b, #fcd34d);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 0.25rem;
+      position: relative;
+    }
+    .bonus-unit {
+      font-size: 1.15rem;
+      font-weight: 800;
+      color: var(--text);
+      margin-bottom: 0.8rem;
+      position: relative;
+    }
+    .bonus-desc {
+      font-size: 0.95rem;
+      color: var(--muted);
+      line-height: 1.7;
+      position: relative;
+    }
+    .bonus-tag {
+      display: inline-block;
+      background: rgba(245,158,11,0.12);
+      border: 1px solid rgba(245,158,11,0.25);
+      color: #fbbf24;
+      padding: 0.28rem 0.85rem;
+      border-radius: 6px;
+      font-size: 0.78rem;
+      font-weight: 700;
+      margin-top: 1.3rem;
+      position: relative;
+    }
+
+    /* ── pricing ─────────────────────────────────────────────── */
+    .price-box {
+      display: inline-block;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid var(--border-hi);
+      border-radius: 20px;
+      padding: 2rem 3rem 1.8rem;
+      margin-bottom: 2rem;
+      position: relative;
+    }
+    .price-original {
+      font-size: 1.2rem;
+      color: var(--muted);
+      text-decoration: line-through;
+      text-decoration-color: rgba(255,80,80,0.6);
+      margin-bottom: 0.2rem;
+    }
+    .price-now {
+      font-size: 3.8rem;
+      font-weight: 900;
+      color: var(--text);
+      line-height: 1;
+      letter-spacing: -0.04em;
+      margin-bottom: 0.7rem;
+    }
+    .price-save {
+      display: inline-block;
+      background: rgba(34,197,94,0.12);
+      border: 1px solid rgba(34,197,94,0.28);
+      color: #4ade80;
+      padding: 0.28rem 0.9rem;
+      border-radius: 6px;
+      font-size: 0.82rem;
+      font-weight: 700;
+    }
+
+    /* ── countdown ────────────────────────────────────────────── */
+    .countdown-wrap {
+      margin-bottom: 2rem;
+      position: relative;
+    }
+    .countdown-label {
+      font-size: 0.88rem;
+      color: var(--muted);
+      margin-bottom: 0.9rem;
+    }
+    .countdown {
+      display: inline-flex;
+      gap: 0.6rem;
+      justify-content: center;
+    }
+    .cd-unit {
+      text-align: center;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 0.8rem 1.1rem;
+      min-width: 72px;
+    }
+    .cd-num {
+      font-size: 2.1rem;
+      font-weight: 900;
+      color: var(--text);
+      line-height: 1;
+      font-variant-numeric: tabular-nums;
+    }
+    .cd-lbl {
+      font-size: 0.7rem;
+      color: var(--muted);
+      margin-top: 0.3rem;
+      letter-spacing: 0.05em;
+    }
+    .cd-sep {
+      font-size: 1.8rem;
+      font-weight: 900;
+      color: var(--dim);
+      align-self: center;
+      padding-bottom: 0.4rem;
+    }
+
+    /* ── social links ─────────────────────────────────────────── */
+    .social-links {
+      display: flex;
+      gap: 0.6rem;
+      align-items: center;
+    }
+    .social-link {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 36px; height: 36px;
+      border-radius: 9px;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid var(--border);
+      color: var(--muted);
+      text-decoration: none;
+      transition: background 0.15s, color 0.15s, border-color 0.15s, transform 0.15s;
+    }
+    .social-link:hover {
+      background: rgba(255,255,255,0.1);
+      color: var(--text);
+      border-color: rgba(255,255,255,0.15);
+      transform: translateY(-2px);
+    }
+
+    /* ── modal ────────────────────────────────────────────────── */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 2000;
+      background: rgba(0,0,0,0.75);
+      backdrop-filter: blur(10px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1.5rem;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.25s ease;
+    }
+    .modal-overlay.open {
+      opacity: 1;
+      pointer-events: all;
+    }
+    .modal-card {
+      background: #0e0e1c;
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 22px;
+      padding: 2.4rem 2.4rem 2rem;
+      width: 100%;
+      max-width: 460px;
+      max-height: 92vh;
+      overflow-y: auto;
+      position: relative;
+      transform: scale(0.9) translateY(20px);
+      transition: transform 0.35s cubic-bezier(0.34,1.4,0.64,1);
+      box-shadow: 0 40px 100px rgba(0,0,0,0.6);
+    }
+    .modal-overlay.open .modal-card {
+      transform: scale(1) translateY(0);
+    }
+    .modal-close {
+      position: absolute;
+      top: 1.1rem;
+      right: 1.1rem;
+      width: 32px; height: 32px;
+      border-radius: 8px;
+      background: rgba(255,255,255,0.07);
+      border: 1px solid var(--border);
+      color: var(--muted);
+      font-size: 1rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.15s, color 0.15s;
+      line-height: 1;
+    }
+    .modal-close:hover { background: rgba(255,255,255,0.13); color: var(--text); }
+    .modal-head {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-bottom: 1.4rem;
+      margin-top: 0.2rem;
+      font-size: 1rem;
+      font-weight: 900;
+      direction: ltr;
+      padding-right: 2.5rem;
+    }
+    .modal-head span { color: #DB785B; }
+    .modal-title {
+      font-size: 1.65rem;
+      font-weight: 900;
+      letter-spacing: -0.025em;
+      margin-bottom: 0.35rem;
+    }
+    .modal-sub {
+      font-size: 0.92rem;
+      color: var(--muted);
+      margin-bottom: 1.8rem;
+      line-height: 1.55;
+    }
+    .field { margin-bottom: 1rem; }
+    .field label {
+      display: block;
+      font-size: 0.84rem;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 0.38rem;
+    }
+    .field input {
+      width: 100%;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 10px;
+      padding: 0.78rem 1rem;
+      font-family: 'Heebo', sans-serif;
+      font-size: 0.97rem;
+      color: var(--text);
+      outline: none;
+      transition: border-color 0.15s, background 0.15s, box-shadow 0.15s;
+    }
+    .field input::placeholder { color: var(--dim); }
+    .field input:focus {
+      border-color: var(--border-hi);
+      background: rgba(59,108,244,0.07);
+      box-shadow: 0 0 0 3px rgba(59,108,244,0.15);
+    }
+    .field input.err { border-color: rgba(239,68,68,0.55); box-shadow: 0 0 0 3px rgba(239,68,68,0.1); }
+    .field-err-msg { font-size: 0.78rem; color: #f87171; margin-top: 0.3rem; display: none; }
+    .field input.err ~ .field-err-msg { display: block; }
+    .checks { margin-top: 1.3rem; display: flex; flex-direction: column; gap: 0.85rem; }
+    .check-row {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.75rem;
+      cursor: pointer;
+      font-size: 0.88rem;
+      color: var(--muted);
+      line-height: 1.5;
+      position: relative;
+      user-select: none;
+    }
+    .check-row input[type="checkbox"] { position: absolute; opacity: 0; width: 0; height: 0; }
+    .check-box {
+      width: 19px; height: 19px;
+      border-radius: 5px;
+      border: 1.5px solid var(--dim);
+      background: rgba(255,255,255,0.04);
+      flex-shrink: 0;
+      margin-top: 1px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: border-color 0.15s, background 0.15s;
+    }
+    .check-row input:checked + .check-box {
+      background: var(--primary);
+      border-color: var(--primary);
+    }
+    .check-row input:checked + .check-box::after {
+      content: '';
+      width: 5px; height: 9px;
+      border: 2px solid #fff;
+      border-top: none;
+      border-right: none;
+      transform: rotate(-45deg) translate(1px, -1px);
+    }
+    .check-row.err .check-box { border-color: rgba(239,68,68,0.6); }
+    .check-link { color: var(--accent); text-decoration: none; }
+    .check-link:hover { text-decoration: underline; }
+    .modal-submit {
+      width: 100%;
+      margin-top: 1.6rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+    }
+    .modal-note {
+      text-align: center;
+      font-size: 0.77rem;
+      color: var(--dim);
+      margin-top: 0.8rem;
+    }
+    .modal-success {
+      display: none;
+      text-align: center;
+      padding: 1rem 0 0.5rem;
+    }
+    .modal-success-ico { font-size: 3.8rem; margin-bottom: 0.8rem; }
+    .modal-success h3 {
+      font-size: 1.6rem;
+      font-weight: 900;
+      letter-spacing: -0.02em;
+      margin-bottom: 0.6rem;
+    }
+    .modal-success p { font-size: 0.95rem; color: var(--muted); line-height: 1.7; }
+    .modal-terms {
+      display: none;
+    }
+    .terms-back {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      background: none;
+      border: none;
+      color: var(--muted);
+      font-family: 'Heebo', sans-serif;
+      font-size: 0.88rem;
+      font-weight: 600;
+      cursor: pointer;
+      padding: 0;
+      margin-bottom: 1.4rem;
+      transition: color 0.15s;
+    }
+    .terms-back:hover { color: var(--text); }
+    .terms-body h4 {
+      font-size: 0.95rem;
+      font-weight: 800;
+      color: var(--text);
+      margin: 1.3rem 0 0.4rem;
+    }
+    .terms-body h4:first-child { margin-top: 0; }
+    .terms-body p {
+      font-size: 0.88rem;
+      color: var(--muted);
+      line-height: 1.7;
+    }
+    .terms-body hr {
+      border: none;
+      border-top: 1px solid var(--border);
+      margin: 1.2rem 0;
+    }
+
+    /* ── diagonal breaks ──────────────────────────────────────── */
+    .diag-down { height: 70px; background: var(--bg-2); clip-path: polygon(0 100%,100% 0,100% 100%); margin-top: -1px; }
+    .diag-up   { height: 70px; background: var(--bg-2); clip-path: polygon(0 0,100% 0,0 100%); margin-bottom: -1px; }
+
+    /* ── footer ───────────────────────────────────────────────── */
+    footer {
+      padding: 2.2rem 2rem;
+      border-top: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .footer-logo { font-weight: 900; font-size: 0.95rem; }
+    .footer-logo span { color: #DB785B; }
+    .footer-copy { font-size: 0.82rem; color: var(--dim); }
+
+    /* ── animations ───────────────────────────────────────────── */
+    @keyframes up {
+      from { opacity: 0; transform: translateY(22px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ── responsive ───────────────────────────────────────────── */
+    @media (max-width: 640px) {
+      nav { padding: 0.9rem 1.2rem; }
+      .hero-stats { gap: 2rem; }
+      .timeline::before { right: 17px; }
+      .tl-dot { right: 9px; }
+      .tl-item { padding-right: 3rem; }
+      footer { flex-direction: column; text-align: center; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a href="#" class="logo" dir="ltr">
+    <svg class="logo-mark" width="32" height="32" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <filter id="glow-nav">
+          <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
+          <feMerge><feMergeNode in="coloredBlur"/><feMergeNode in="SourceGraphic"/></feMerge>
+        </filter>
+      </defs>
+      <path d="M50 5 L90 25 L90 75 L50 95 L10 75 L10 25 Z" fill="none" stroke="#DB785B" stroke-width="8" stroke-linejoin="round" filter="url(#glow-nav)"/>
+      <circle cx="50" cy="50" r="16" fill="#DB785B"/>
+      <line x1="50" y1="30" x2="50" y2="22" stroke="#DB785B" stroke-width="2.5" stroke-linecap="round" opacity="0.7"/>
+      <line x1="50" y1="70" x2="50" y2="78" stroke="#DB785B" stroke-width="2.5" stroke-linecap="round" opacity="0.7"/>
+      <line x1="30" y1="50" x2="22" y2="50" stroke="#DB785B" stroke-width="2.5" stroke-linecap="round" opacity="0.7"/>
+      <line x1="70" y1="50" x2="78" y2="50" stroke="#DB785B" stroke-width="2.5" stroke-linecap="round" opacity="0.7"/>
+      <line x1="35.86" y1="35.86" x2="30.2" y2="30.2" stroke="#DB785B" stroke-width="2.5" stroke-linecap="round" opacity="0.7"/>
+      <line x1="64.14" y1="64.14" x2="69.8" y2="69.8" stroke="#DB785B" stroke-width="2.5" stroke-linecap="round" opacity="0.7"/>
+      <line x1="35.86" y1="64.14" x2="30.2" y2="69.8" stroke="#DB785B" stroke-width="2.5" stroke-linecap="round" opacity="0.7"/>
+      <line x1="64.14" y1="35.86" x2="69.8" y2="30.2" stroke="#DB785B" stroke-width="2.5" stroke-linecap="round" opacity="0.7"/>
+    </svg>
+    Roee<span>AI</span>
+  </a>
+  <button onclick="openModal()" class="nav-btn">הירשם לקורס ←</button>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-mesh"></div>
+  <div class="hero-grid"></div>
+
+  <div class="hero-badge">⚡ קורס אינטנסיבי · 4 שעות · עברית</div>
+
+  <h1>מאפס<br>ל<span class="grad">AI Developer</span></h1>
+
+  <p class="hero-sub">
+    קורס מעשי בעברית שילמד אותך לשלוט ב-Claude Code מהיסוד -
+    מה שלוקח לאחרים חודשים, תלמד תוך יום אחד.
+  </p>
+
+  <div class="hero-tags">
+    <span class="tag">👨‍💼 מנהלי מוצר</span>
+    <span class="tag">👨‍💻 מפתחים</span>
+    <span class="tag">🚀 כל מי שרוצה להוביל את ה-AI</span>
+  </div>
+
+  <div class="hero-btns">
+    <button onclick="openModal()" class="btn-primary">אני רוצה להירשם ←</button>
+    <a href="#curriculum" class="btn-ghost">מה לומדים?</a>
+  </div>
+
+  <div class="hero-stats">
+    <div>
+      <div class="stat-n">4</div>
+      <div class="stat-l">שעות אינטנסיביות</div>
+    </div>
+    <div>
+      <div class="stat-n">3</div>
+      <div class="stat-l">נושאים בכל שעה</div>
+    </div>
+    <div>
+      <div class="stat-n">0</div>
+      <div class="stat-l">ניסיון נדרש</div>
+    </div>
+  </div>
+</section>
+
+<!-- PROBLEM -->
+<div class="diag-down"></div>
+<section class="section alt">
+  <div class="container">
+    <div class="label">למה זה דחוף</div>
+    <h2 class="section-h">אתה יודע ש-AI יכול לשנות את הדרך שאתה עובד.<br>אבל בינתיים - אתה עוד לא שם.</h2>
+    <div class="pains">
+      <div class="pain">
+        <span class="pain-ico">🌀</span>
+        <span class="pain-txt">ChatGPT נראה כמו צעצוע לעומת מה שאפשר לעשות עם כלי AI מקצועיים</span>
+      </div>
+      <div class="pain">
+        <span class="pain-ico">🧱</span>
+        <span class="pain-txt">Claude Code נראה כמו קופסא שחורה - לא ברור מאיפה להתחיל</span>
+      </div>
+      <div class="pain">
+        <span class="pain-ico">⏳</span>
+        <span class="pain-txt">הקולגות שלך כבר מספיקים פי 3 - וההפרש הזה רק יגדל</span>
+      </div>
+      <div class="pain">
+        <span class="pain-ico">📚</span>
+        <span class="pain-txt">כל התוכן באנגלית, מפוזר ברשת, ואין קורס מסודר בעברית שמסביר את זה מהיסוד</span>
+      </div>
+    </div>
+  </div>
+</section>
+<div class="diag-up"></div>
+
+<!-- CURRICULUM -->
+<section class="section" id="curriculum">
+  <div class="curriculum-head">
+    <div class="label">תוכנית הקורס</div>
+    <h2 class="section-h">מה לומדים בדיוק</h2>
+    <p class="section-sub">4 שעות, 3 נושאים בכל שעה - מהיסוד ועד לדף נחיתה חי בדומיין שלך</p>
+  </div>
+
+  <div class="timeline">
+
+    <div class="tl-hour">שעה 1</div>
+
+    <div class="tl-item">
+      <div class="tl-dot"></div>
+      <div class="tl-box">
+        <div class="tl-num">שיעור 01</div>
+        <div class="tl-name">מהו System Prompt?</div>
+        <div class="tl-desc">הבסיס של כל אינטראקציה עם AI - איך לדבר עם המודל בצורה נכונה כדי לקבל תוצאות אמיתיות</div>
+      </div>
+    </div>
+
+    <div class="tl-item">
+      <div class="tl-dot"></div>
+      <div class="tl-box">
+        <div class="tl-num">שיעור 02</div>
+        <div class="tl-name">התקנת Claude Code ו-Antigravity</div>
+        <div class="tl-desc">הגדרת הסביבה מאפס - מההתקנה עד שהפקודה הראשונה רצה בלי בלבולים</div>
+      </div>
+    </div>
+
+    <div class="tl-item">
+      <div class="tl-dot"></div>
+      <div class="tl-box">
+        <div class="tl-num">שיעור 03</div>
+        <div class="tl-name">Slash Commands</div>
+        <div class="tl-desc">הפקודות שהופכות את Claude Code למכונה שעובדת בשבילך - קיצורי דרך שמשנים כל פעולה</div>
+      </div>
+    </div>
+
+    <div class="tl-hour">שעה 2</div>
+
+    <div class="tl-item">
+      <div class="tl-dot"></div>
+      <div class="tl-box">
+        <div class="tl-num">שיעור 04</div>
+        <div class="tl-name">Claude.md</div>
+        <div class="tl-desc">הקובץ שמגדיר את ה"אני מאמין" של ה-AI שלך - הנחיות קבועות שנשמרות לכל שיחה</div>
+      </div>
+    </div>
+
+    <div class="tl-item">
+      <div class="tl-dot"></div>
+      <div class="tl-box">
+        <div class="tl-num">שיעור 05</div>
+        <div class="tl-name">שימוש ב-Skills</div>
+        <div class="tl-desc">איך להרחיב את יכולות Claude Code עם כישורים מוכנים מראש - plug & play לכל תרחיש</div>
+      </div>
+    </div>
+
+    <div class="tl-item">
+      <div class="tl-dot"></div>
+      <div class="tl-box">
+        <div class="tl-num">שיעור 06</div>
+        <div class="tl-name">יצירת Skills</div>
+        <div class="tl-desc">בניית כישורים מותאמים אישית שעובדים בדיוק לפי הצרכים שלך - פעם אחת, לנצח</div>
+      </div>
+    </div>
+
+    <div class="tl-hour">שעה 3</div>
+
+    <div class="tl-item">
+      <div class="tl-dot"></div>
+      <div class="tl-box">
+        <div class="tl-num">שיעור 07</div>
+        <div class="tl-name">בניית Landing Page</div>
+        <div class="tl-desc">פרויקט מעשי: בונים דף נחיתה מקצועי מאפס עם Claude Code - רואים איך הכל מתחבר</div>
+      </div>
+    </div>
+
+    <div class="tl-item">
+      <div class="tl-dot"></div>
+      <div class="tl-box">
+        <div class="tl-num">שיעור 08</div>
+        <div class="tl-name">העלאה ל-GitHub</div>
+        <div class="tl-desc">ניהול גרסאות בסיסי - שמירה, גיבוי ושיתוף הפרויקט בצורה מקצועית</div>
+      </div>
+    </div>
+
+    <div class="tl-item">
+      <div class="tl-dot"></div>
+      <div class="tl-box">
+        <div class="tl-num">שיעור 09</div>
+        <div class="tl-name">פריסה ל-Vercel</div>
+        <div class="tl-desc">הפרויקט שלך חי ומקוון תוך דקות - deploy אוטומטי מ-GitHub ישר לאינטרנט</div>
+      </div>
+    </div>
+
+    <div class="tl-hour">שעה 4</div>
+
+    <div class="tl-item">
+      <div class="tl-dot"></div>
+      <div class="tl-box">
+        <div class="tl-num">שיעור 10</div>
+        <div class="tl-name">חיבור דומיין אישי</div>
+        <div class="tl-desc">הפרויקט שלך עם כתובת מקצועית - רושמים דומיין ומחברים אותו לאתר בלי כאבי ראש</div>
+      </div>
+    </div>
+
+    <div class="tl-item">
+      <div class="tl-dot"></div>
+      <div class="tl-box">
+        <div class="tl-num">שיעור 11</div>
+        <div class="tl-name">שימוש ב-Landing Page Skill</div>
+        <div class="tl-desc">סיום מרהיב: מחברים את כל מה שלמדנו ובונים דף נחיתה חדש תוך דקות ספורות</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOR WHO -->
+<div class="diag-down"></div>
+<section class="section alt">
+  <div class="container">
+    <div style="text-align:center;">
+      <div class="label">למי זה מתאים</div>
+      <h2 class="section-h">הקורס הזה בנוי בשבילך</h2>
+    </div>
+    <div class="personas">
+      <div class="persona">
+        <div class="persona-ico">👨‍💼</div>
+        <div class="persona-role">מנהל מוצר</div>
+        <div class="persona-desc">רוצה לבנות פרוטוטייפים, לאמת רעיונות ולתקשר עם הצוות הטכני בשפה שלהם - בלי להיות תלוי במפתח לכל דבר קטן.</div>
+      </div>
+      <div class="persona">
+        <div class="persona-ico">👨‍💻</div>
+        <div class="persona-role">מפתח תוכנה</div>
+        <div class="persona-desc">רוצה להכפיל את התפוקה שלו, להוריד טסקים שגרתיים ל-AI ולהתמקד בחלקים שדורשים חשיבה אמיתית.</div>
+      </div>
+      <div class="persona">
+        <div class="persona-ico">🚀</div>
+        <div class="persona-role">כל מי שרוצה להישאר רלוונטי</div>
+        <div class="persona-desc">הבין ש-AI הוא לא עוד טרנד - זה כלי עבודה, ואנשים שישלטו בו עכשיו יהיו צעד קדימה מכולם.</div>
+      </div>
+    </div>
+  </div>
+</section>
+<div class="diag-up"></div>
+
+<!-- TESTIMONIALS -->
+<section class="section">
+  <div class="container">
+    <div style="text-align:center;">
+      <div class="label">מה אומרים הבוגרים</div>
+      <h2 class="section-h">תוצאות אמיתיות</h2>
+    </div>
+    <div class="testi-grid">
+      <div class="testi">
+        <div class="stars">★★★★★</div>
+        <p class="testi-txt">"הגעתי לקורס כמנהלת מוצר בלי שום ידע טכני. עד סוף היום היה לי דף נחיתה חי עם דומיין משלי. לא האמנתי שאני יכולה לעשות את זה לבד."</p>
+        <div class="author">
+          <div class="avatar" style="background:linear-gradient(135deg,#3b6cf4,#00d4ff);">ש</div>
+          <div>
+            <div class="author-name">שירה לוי</div>
+            <div class="author-role">מנהלת מוצר, חברת פינטק</div>
+          </div>
+        </div>
+      </div>
+      <div class="testi">
+        <div class="stars">★★★★★</div>
+        <p class="testi-txt">"חמש שנות ניסיון כמפתח ולא ידעתי כמה אני מפסיד. רועי לימד אותי שיטת עבודה שחסכה לי שעות כל יום. הייתי אמור לעשות את זה הרבה קודם."</p>
+        <div class="author">
+          <div class="avatar" style="background:linear-gradient(135deg,#7c3aed,#3b6cf4);">י</div>
+          <div>
+            <div class="author-name">יואב מזרחי</div>
+            <div class="author-role">מפתח Full Stack, סטארטאפ</div>
+          </div>
+        </div>
+      </div>
+      <div class="testi">
+        <div class="stars">★★★★★</div>
+        <p class="testi-txt">"ניסיתי ללמוד Claude Code לבד מיוטיוב ולא הצלחתי. הקורס של רועי נתן לי את כל הפאזל בצורה סדורה - ועכשיו אני בונה כלים שחסכו לי עשרות שעות."</p>
+        <div class="author">
+          <div class="avatar" style="background:linear-gradient(135deg,#059669,#0d9488);">נ</div>
+          <div>
+            <div class="author-name">נועה בן-דוד</div>
+            <div class="author-role">יזמת ומנהלת פרויקטים</div>
+          </div>
+        </div>
+      </div>
+      <div class="testi">
+        <div class="stars">★★★★★</div>
+        <p class="testi-txt">"בעלי אמר לי 'את לא תבני אתר לבד'. אחרי הקורס של רועי - הראיתי לו את הדומיין שלי. רועי מסביר בצורה שגם מי שלא מפתח מבין לגמרי."</p>
+        <div class="author">
+          <div class="avatar" style="background:linear-gradient(135deg,#be185d,#9333ea);">ת</div>
+          <div>
+            <div class="author-name">תמר כהן</div>
+            <div class="author-role">בעלת עסק עצמאי, שיווק דיגיטלי</div>
+          </div>
+        </div>
+      </div>
+      <div class="testi">
+        <div class="stars">★★★★★</div>
+        <p class="testi-txt">"כמנהל R&D חשבתי שאני כבר יודע הכל על AI. טעיתי. שיטת העבודה עם Skills ו-Claude.md שינתה לי את הדרך שאני מוביל את הצוות כולו."</p>
+        <div class="author">
+          <div class="avatar" style="background:linear-gradient(135deg,#0284c7,#0891b2);">א</div>
+          <div>
+            <div class="author-name">אורי שפירא</div>
+            <div class="author-role">מנהל R&D, חברת SaaS</div>
+          </div>
+        </div>
+      </div>
+      <div class="testi">
+        <div class="stars">★★★★★</div>
+        <p class="testi-txt">"השקעתי 4 שעות וחסכתי מאות. אני משתמש ב-Skills שקיבלתי בבונוס כל יום - כל אחת מהן לבד שווה את המחיר של הקורס."</p>
+        <div class="author">
+          <div class="avatar" style="background:linear-gradient(135deg,#b45309,#d97706);">ר</div>
+          <div>
+            <div class="author-name">רן גולדברג</div>
+            <div class="author-role">מפתח Backend, היי-טק</div>
+          </div>
+        </div>
+      </div>
+      <div class="testi">
+        <div class="stars">★★★★★</div>
+        <p class="testi-txt">"הייתי ספקנית - 'עוד קורס AI שמבטיח הרים וגבעות'. אבל רועי נותן כלים אמיתיים שמיד שמים אותם לעבודה. יצאתי עם ביטחון שלא היה לי לפני."</p>
+        <div class="author">
+          <div class="avatar" style="background:linear-gradient(135deg,#0f766e,#059669);">מ</div>
+          <div>
+            <div class="author-name">מאיה אברהם</div>
+            <div class="author-role">אנליסטית, חברת ביטוח</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- WHAT YOU GET -->
+<div class="diag-down"></div>
+<section class="section alt">
+  <div class="container">
+    <div style="text-align:center;">
+      <div class="label">מה כלול</div>
+      <h2 class="section-h">כל מה שמגיע עם הקורס</h2>
+    </div>
+    <div class="benefits">
+      <div class="benefit">
+        <div class="ben-ico">🎯</div>
+        <div>
+          <div class="ben-title">4 שעות הדרכה מעשית</div>
+          <div class="ben-desc">קורס פנים אל פנים, ידני מהתחלה ועד הסוף</div>
+        </div>
+      </div>
+      <div class="benefit">
+        <div class="ben-ico">📁</div>
+        <div>
+          <div class="ben-title">כל חומרי הקורס</div>
+          <div class="ben-desc">קבצים, Skills ותבניות שנבנה ביחד - שלך לנצח</div>
+        </div>
+      </div>
+      <div class="benefit">
+        <div class="ben-ico">💬</div>
+        <div>
+          <div class="ben-title">קבוצת תמיכה</div>
+          <div class="ben-desc">גישה לבוגרי הקורס לשאלות המשך ועזרה</div>
+        </div>
+      </div>
+      <div class="benefit">
+        <div class="ben-ico">🚀</div>
+        <div>
+          <div class="ben-title">פרויקט גמור ביד</div>
+          <div class="ben-desc">תסיים עם דף נחיתה חי ב-Vercel עם דומיין אישי</div>
+        </div>
+      </div>
+      <div class="benefit">
+        <div class="ben-ico">🔄</div>
+        <div>
+          <div class="ben-title">עדכונים עתידיים</div>
+          <div class="ben-desc">גישה לחומרים חדשים ככל שהתחום מתפתח</div>
+        </div>
+      </div>
+      <div class="benefit">
+        <div class="ben-ico">⚡</div>
+        <div>
+          <div class="ben-title">ידע שניתן ליישם מחר</div>
+          <div class="ben-desc">לא תיאוריה - כלים שמשתמשים בהם ביום ראשון</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+<div class="diag-up"></div>
+
+<!-- BONUS -->
+<section class="bonus-section">
+  <div class="bonus-header">
+    <div class="bonus-pill">🎁 בונוס בלעדי</div>
+    <h2 class="section-h">מה שאחרים לא נותנים</h2>
+    <p class="section-sub" style="max-width:500px;margin:0 auto;">נרשמת לקורס - קיבלת עוד שניים שישנו את הדרך שאתה עובד.</p>
+  </div>
+  <div class="bonus-cards">
+    <div class="bonus-card">
+      <div class="bonus-num">50</div>
+      <div class="bonus-unit">Skills מוכנות להורדה מיידית</div>
+      <div class="bonus-desc">ספרייה שלמה של כישורים מוכנים לשימוש - מיצירת מסמכים, דרך ניתוח קוד, ועד אוטומציות מתקדמות. מה שלוקח לאחרים שבועות לבנות, אתה מקבל ביום הראשון.</div>
+      <span class="bonus-tag">⚡ שווי ₪800 - חינם לחלוטין</span>
+    </div>
+    <div class="bonus-card">
+      <div class="bonus-num">7</div>
+      <div class="bonus-unit">ימים של Q&amp;A פרטי עם רועי</div>
+      <div class="bonus-desc">שבוע שלם של גישה ישירה לרועי לכל שאלה שתעלה - בווצאפ, בזמן אמת. תקועים? לא ברור משהו? רועי כאן אישית כדי שתצאו ממנו מספיקים.</div>
+      <span class="bonus-tag">🔒 בלעדי לנרשמים בלבד</span>
+    </div>
+  </div>
+</section>
+
+<!-- FINAL CTA -->
+<section class="cta-section" id="register">
+  <div class="cta-glow"></div>
+  <h2>מוכן להתחיל<br>לעבוד עם AI ברצינות?</h2>
+  <p>מחיר ההשקה פג בעוד:</p>
+
+  <div class="countdown-wrap">
+    <div class="countdown" dir="ltr">
+      <div class="cd-unit">
+        <div class="cd-num" id="cd-days">04</div>
+        <div class="cd-lbl">ימים</div>
+      </div>
+      <div class="cd-sep">:</div>
+      <div class="cd-unit">
+        <div class="cd-num" id="cd-hours">00</div>
+        <div class="cd-lbl">שעות</div>
+      </div>
+      <div class="cd-sep">:</div>
+      <div class="cd-unit">
+        <div class="cd-num" id="cd-minutes">00</div>
+        <div class="cd-lbl">דקות</div>
+      </div>
+      <div class="cd-sep">:</div>
+      <div class="cd-unit">
+        <div class="cd-num" id="cd-seconds">00</div>
+        <div class="cd-lbl">שניות</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="price-box">
+    <div class="price-original">₪2,000</div>
+    <div class="price-now">₪555</div>
+    <div class="price-save">חוסך ₪1,445 - מחיר השקה לשבוע בלבד</div>
+    <div style="margin-top:1.6rem;">
+      <button onclick="openModal()" class="btn-primary">
+        אני רוצה להירשם ב-₪555 ←
+      </button>
+    </div>
+  </div>
+
+  <p class="urgency">⚡ מקומות מוגבלים · המחיר עולה בסוף תקופת ההשקה</p>
+</section>
+
+<!-- MODAL -->
+<div class="modal-overlay" id="modal" role="dialog" aria-modal="true">
+  <div class="modal-card">
+    <button class="modal-close" onclick="closeModal()" aria-label="סגור">✕</button>
+
+    <div id="modal-form-wrap">
+      <div class="modal-head">
+        <svg width="24" height="24" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+          <defs><filter id="gw"><feGaussianBlur stdDeviation="2" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>
+          <path d="M50 5 L90 25 L90 75 L50 95 L10 75 L10 25 Z" fill="none" stroke="#DB785B" stroke-width="8" stroke-linejoin="round" filter="url(#gw)"/>
+          <circle cx="50" cy="50" r="16" fill="#DB785B"/>
+          <line x1="50" y1="30" x2="50" y2="22" stroke="#DB785B" stroke-width="2.5" stroke-linecap="round" opacity="0.7"/>
+          <line x1="50" y1="70" x2="50" y2="78" stroke="#DB785B" stroke-width="2.5" stroke-linecap="round" opacity="0.7"/>
+          <line x1="30" y1="50" x2="22" y2="50" stroke="#DB785B" stroke-width="2.5" stroke-linecap="round" opacity="0.7"/>
+          <line x1="70" y1="50" x2="78" y2="50" stroke="#DB785B" stroke-width="2.5" stroke-linecap="round" opacity="0.7"/>
+        </svg>
+        Roee<span>AI</span>
+      </div>
+
+      <h3 class="modal-title">הרשמה לקורס</h3>
+      <p class="modal-sub">מלא את הפרטים ורועי יחזור אליך תוך 24 שעות לאישור מקומך.</p>
+
+      <form id="reg-form" novalidate>
+        <div class="field">
+          <label for="reg-name">שם מלא *</label>
+          <input type="text" id="reg-name" placeholder="ישראל ישראלי" autocomplete="name" />
+          <div class="field-err-msg">שדה חובה</div>
+        </div>
+        <div class="field">
+          <label for="reg-email">כתובת אימייל *</label>
+          <input type="email" id="reg-email" placeholder="you@example.com" dir="ltr" autocomplete="email" />
+          <div class="field-err-msg">נא להזין כתובת אימייל תקינה</div>
+        </div>
+        <div class="field">
+          <label for="reg-phone">מספר טלפון *</label>
+          <input type="tel" id="reg-phone" placeholder="050-0000000" dir="ltr" autocomplete="tel" />
+          <div class="field-err-msg">שדה חובה</div>
+        </div>
+
+        <div class="checks">
+          <label class="check-row" id="row-terms">
+            <input type="checkbox" id="reg-terms" />
+            <span class="check-box"></span>
+            <span>קראתי ואני מסכים/ה <a href="#" class="check-link" onclick="showTerms();return false">לתנאי השימוש</a></span>
+          </label>
+          <label class="check-row" id="row-consent">
+            <input type="checkbox" id="reg-consent" />
+            <span class="check-box"></span>
+            <span>אני מסכים/ה לקבל עדכונים ומידע מ-RoeeAI בווצאפ ובאימייל</span>
+          </label>
+        </div>
+
+        <button type="submit" class="btn-primary modal-submit">שלח הרשמה ←</button>
+        <p class="modal-note">⚡ מחיר ₪555 בתוקף לשבוע בלבד</p>
+      </form>
+    </div>
+
+    <!-- Terms of Use Panel -->
+    <div class="modal-terms" id="modal-terms">
+      <button class="terms-back" onclick="backToForm()">→ חזרה להרשמה</button>
+      <h3 class="modal-title" style="font-size:1.35rem;margin-bottom:1.2rem;">תנאי שימוש</h3>
+      <div class="terms-body">
+        <p>עדכון אחרון: מאי 2025</p>
+        <hr>
+
+        <h4>1. כללי</h4>
+        <p>בעצם הרשמתך לקורס "מאפס ל-AI Developer" המוצע על ידי RoeeAI ("אנחנו"), הנך מסכים לתנאי שימוש אלו. נא לקרוא אותם בעיון לפני השלמת ההרשמה.</p>
+
+        <h4>2. השירות</h4>
+        <p>הקורס הוא קורס אינטנסיבי בן 4 שעות המועבר באופן מקוון או פנים אל פנים בהתאם להסכמה מראש. הוא כולל חומרים דיגיטליים, 50 Skills מוכנות, וגישה לקבוצת תמיכה של בוגרי הקורס.</p>
+
+        <h4>3. תשלום</h4>
+        <p>המחיר הסופי יאושר בהתכתבות עם רועי לאחר ההרשמה. התשלום מתבצע לפני מועד הקורס. מחיר ההשקה של ₪555 בתוקף לשבוע מתאריך פרסום הדף.</p>
+
+        <h4>4. מדיניות ביטול</h4>
+        <p>ביטול עד 48 שעות לפני מועד הקורס - החזר כספי מלא. ביטול בפחות מ-48 שעות ממועד הקורס - לא יינתן החזר. דחיית מועד ניתנת פעם אחת ללא עלות.</p>
+
+        <h4>5. קניין רוחני</h4>
+        <p>כל חומרי הקורס, לרבות ה-Skills, סרטוני ההדרכה והמסמכים, מיועדים לשימוש אישי בלבד. אין להעביר, לשכפל, לפרסם או למכור אותם ללא אישור מראש ובכתב מ-RoeeAI.</p>
+
+        <h4>6. הגבלת אחריות</h4>
+        <p>RoeeAI אינה אחראית לכל נזק ישיר, עקיף או תוצאתי הנובע מהשימוש בתכני הקורס. התוצאות עשויות להשתנות בין משתתף למשתתף.</p>
+
+        <h4>7. פרטיות ותקשורת</h4>
+        <p>המידע שתמסור ישמש אך ורק לניהול ההרשמה ולשליחת עדכונים רלוונטיים בהתאם להסכמתך. לא נמכור ולא נעביר את פרטיך לצד שלישי כלשהו.</p>
+
+        <h4>8. שינויים בתנאים</h4>
+        <p>RoeeAI שומרת לעצמה את הזכות לעדכן תנאים אלו בכל עת. שימוש מתמשך בשירות מהווה הסכמה לתנאים המעודכנים.</p>
+
+        <h4>9. יצירת קשר</h4>
+        <p>לכל שאלה בנוגע לתנאים אלו ניתן לפנות אלינו בכתובת: roeea2@gmail.com</p>
+      </div>
+      <button onclick="backToForm()" class="btn-primary" style="width:100%;margin-top:1.8rem;justify-content:center;">הבנתי - חזרה להרשמה</button>
+    </div>
+
+    <div class="modal-success" id="modal-success">
+      <div class="modal-success-ico">🎉</div>
+      <h3>נרשמת בהצלחה!</h3>
+      <p>רועי יחזור אליך בהקדם.<br>בינתיים עקוב אחרינו ברשתות.</p>
+      <button onclick="closeModal()" class="btn-primary" style="margin-top:1.8rem;">סגור</button>
+    </div>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-logo" dir="ltr">Roee<span>AI</span></div>
+  <div class="social-links">
+    <a href="https://linkedin.com/in/roeea" class="social-link" target="_blank" rel="noopener" title="LinkedIn">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+    </a>
+    <a href="https://www.youtube.com/@roeea2" class="social-link" target="_blank" rel="noopener" title="YouTube">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M23.498 6.186a3.016 3.016 0 00-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 00.502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 002.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 002.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+    </a>
+    <a href="https://www.instagram.com/roeeaiautomation/" class="social-link" target="_blank" rel="noopener" title="Instagram">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg>
+    </a>
+  </div>
+  <div class="footer-copy">© 2025 RoeeAI · כל הזכויות שמורות</div>
+</footer>
+
+<script>
+  // ── Supabase ───────────────────────────────────────────────
+  const db = window.supabase.createClient(
+    'https://cdtysoqiawzrufrgtrez.supabase.co',
+    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNkdHlzb3FpYXd6cnVmcmd0cmV6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTcyNzQ0NDgsImV4cCI6MjA3Mjg1MDQ0OH0.6eTTCNVeEFzssp5lHTBesoLX994gPF9oKON4HD-3Vgo'
+  );
+
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (!e.isIntersecting) return;
+      const delay = +e.target.dataset.delay || 0;
+      setTimeout(() => e.target.classList.add('vis'), delay);
+      io.unobserve(e.target);
+    });
+  }, { threshold: 0.08 });
+
+  document.querySelectorAll('.tl-item').forEach((el, i) => {
+    el.dataset.delay = i * 75;
+    io.observe(el);
+  });
+  document.querySelectorAll('.testi').forEach((el, i) => {
+    el.dataset.delay = i * 100;
+    io.observe(el);
+  });
+  document.querySelectorAll('.benefit').forEach((el, i) => {
+    el.dataset.delay = i * 65;
+    io.observe(el);
+  });
+  document.querySelectorAll('.bonus-card').forEach((el, i) => {
+    el.dataset.delay = i * 150;
+    io.observe(el);
+  });
+
+  // Countdown - deadline stored in localStorage so it survives page refreshes
+  const KEY = 'roeeai_cd';
+  let deadline = +localStorage.getItem(KEY);
+  if (!deadline || deadline < Date.now()) {
+    deadline = Date.now() + 4 * 24 * 60 * 60 * 1000;
+    localStorage.setItem(KEY, deadline);
+  }
+
+  function tick() {
+    const diff = Math.max(0, deadline - Date.now());
+    const d = Math.floor(diff / 86400000);
+    const h = Math.floor((diff % 86400000) / 3600000);
+    const m = Math.floor((diff % 3600000) / 60000);
+    const s = Math.floor((diff % 60000) / 1000);
+    const pad = n => String(n).padStart(2, '0');
+    document.getElementById('cd-days').textContent    = pad(d);
+    document.getElementById('cd-hours').textContent   = pad(h);
+    document.getElementById('cd-minutes').textContent = pad(m);
+    document.getElementById('cd-seconds').textContent = pad(s);
+  }
+  tick();
+  setInterval(tick, 1000);
+
+  // ── Modal ──────────────────────────────────────────────────
+  function openModal() {
+    document.getElementById('modal').classList.add('open');
+    document.body.style.overflow = 'hidden';
+    setTimeout(() => document.getElementById('reg-name').focus(), 320);
+  }
+
+  function closeModal() {
+    document.getElementById('modal').classList.remove('open');
+    document.body.style.overflow = '';
+    // Reset to form view when reopened
+    setTimeout(() => {
+      document.getElementById('modal-form-wrap').style.display = '';
+      document.getElementById('modal-terms').style.display     = 'none';
+      document.getElementById('modal-success').style.display   = 'none';
+    }, 300);
+  }
+
+  function showTerms() {
+    document.getElementById('modal-form-wrap').style.display = 'none';
+    document.getElementById('modal-terms').style.display     = 'block';
+    document.querySelector('.modal-card').scrollTop = 0;
+  }
+
+  function backToForm() {
+    document.getElementById('modal-terms').style.display     = 'none';
+    document.getElementById('modal-form-wrap').style.display = '';
+    document.querySelector('.modal-card').scrollTop = 0;
+  }
+
+  // Close on backdrop click
+  document.getElementById('modal').addEventListener('click', function(e) {
+    if (e.target === this) closeModal();
+  });
+
+  // Close on Escape
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+
+  // Form validation & submit
+  document.getElementById('reg-form').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    let ok = true;
+
+    const name    = document.getElementById('reg-name');
+    const email   = document.getElementById('reg-email');
+    const phone   = document.getElementById('reg-phone');
+    const terms   = document.getElementById('reg-terms');
+    const consent = document.getElementById('reg-consent');
+
+    // Text fields
+    [name, phone].forEach(el => {
+      el.classList.toggle('err', !el.value.trim());
+      if (!el.value.trim()) ok = false;
+    });
+
+    // Email
+    const emailOk = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.value.trim());
+    email.classList.toggle('err', !emailOk);
+    if (!emailOk) ok = false;
+
+    // Checkboxes
+    document.getElementById('row-terms').classList.toggle('err', !terms.checked);
+    document.getElementById('row-consent').classList.toggle('err', !consent.checked);
+    if (!terms.checked || !consent.checked) ok = false;
+
+    if (!ok) return;
+
+    // Loading state
+    const btn = this.querySelector('button[type="submit"]');
+    btn.disabled = true;
+    btn.textContent = '...שולח';
+
+    // Save to Supabase
+    const { error } = await db
+      .from('RoeeAI_course')
+      .insert([{
+        name:       name.value.trim(),
+        email:      email.value.trim(),
+        phone:      phone.value.trim(),
+        source:     'roeeai_course',
+        email_sent: 0
+      }]);
+
+    if (error) console.error('Supabase:', error.message);
+
+    // Send welcome email (fire-and-forget — don't block on failure)
+    fetch('https://cdtysoqiawzrufrgtrez.supabase.co/functions/v1/send-welcome-email', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNkdHlzb3FpYXd6cnVmcmd0cmV6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTcyNzQ0NDgsImV4cCI6MjA3Mjg1MDQ0OH0.6eTTCNVeEFzssp5lHTBesoLX994gPF9oKON4HD-3Vgo',
+      },
+      body: JSON.stringify({
+        name:  name.value.trim(),
+        email: email.value.trim(),
+      }),
+    }).catch(e => console.error('Email function:', e));
+
+    btn.disabled = false;
+    btn.textContent = 'שלח הרשמה ←';
+
+    // Show success
+    document.getElementById('modal-form-wrap').style.display = 'none';
+    document.getElementById('modal-success').style.display   = 'block';
+  });
+
+  // Clear errors on input
+  document.querySelectorAll('.field input').forEach(el =>
+    el.addEventListener('input', () => el.classList.remove('err'))
+  );
+  document.querySelectorAll('.check-row input').forEach(el =>
+    el.addEventListener('change', () => el.closest('.check-row').classList.remove('err'))
+  );
+</script>
+
+</body>
+</html>
